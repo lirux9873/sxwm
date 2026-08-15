@@ -102,7 +102,7 @@ The Makefile automatically uses <code>/usr/X11R6/include</code> and <code>/usr/X
 <summary>FreeBSD</summary>
 <pre><code># If you use doas or su instead of sudo, modify the following commands accordingly.
 sudo pkg update
-sudo pkg install gmake libX11 libXinerama libXcursor</code></pre>
+sudo pkg install gmake libX11 libXinerama libXcursor xorg</code></pre>
 
 sxwm uses GNU Make. On FreeBSD, use <code>gmake</code> instead of the system BSD <code>make</code>:
 
