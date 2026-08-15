@@ -21,14 +21,13 @@ Please read [the developer docs](docs/sxwm-dev.md)
 Check [the man page markdown for relevant info](docs/sxwm.md)
 
 ---
-
 ## Dependencies
 
 - `libX11`
 - `Xinerama`
 - `XCursor`
 - `CC`
-- `Make`
+- GNU Make
 
 <details>
 <summary>Debian / Ubuntu / Linux Mint</summary>
@@ -41,7 +40,6 @@ sudo apt install libx11-dev libxcursor-dev libxinerama-dev build-essential</code
 <pre><code>sudo pacman -Syy
 sudo pacman -S libx11 libxinerama gcc make</code></pre>
 </details>
-
 <details>
 <summary>Gentoo</summary>
 <pre><code>sudo emerge --ask x11-libs/libX11 x11-libs/libXinerama sys-devel/gcc sys-devel/make
@@ -54,7 +52,6 @@ sudo emaint -a sync
 <pre><code>sudo xbps-install -S
 sudo xbps-install libX11-devel libXinerama-devel libXcursor-devel gcc make</code></pre>
 </details>
-
 <details>
 <summary>Fedora / RHEL / AlmaLinux / Rocky</summary>
 <pre><code>sudo dnf update
@@ -66,7 +63,6 @@ sudo dnf install libX11-devel libXcursor-devel libXinerama-devel gcc make</code>
 <pre><code>sudo zypper refresh
 sudo zypper install libX11-devel libXinerama-devel gcc make</code></pre>
 </details>
-
 <details>
 <summary>Alpine Linux</summary>
 <pre><code>doas apk update
@@ -90,19 +86,30 @@ sudo nixos-rebuild switch
 <pre><code>slackpkg update
 slackpkg install gcc make libX11 libXinerama</code></pre>
 </details>
-
 <details>
 <summary>OpenBSD</summary>
 <pre><code>doas pkg_add gmake</code></pre>
 You will also need the X sets (<code>xbase</code>, <code>xfonts</code>, <code>xserv</code> and <code>xshare</code>) installed.
-When you make the code, use <code>gmake</code> instead of <code>make</code> (which will be BSD make). Use the following command to build: <code>gmake CFLAGS="-I/usr/X11R6/include -Wall -Wextra -O3 -Isrc" LDFLAGS="-L/usr/X11R6/lib -lX11 -lXinerama -lXcursor"</code>
-</details>
 
+sxwm uses GNU Make. On OpenBSD, use <code>gmake</code> instead of the system BSD <code>make</code>:
+
+<pre><code>gmake
+doas gmake install</code></pre>
+
+The Makefile automatically uses <code>/usr/X11R6/include</code> and <code>/usr/X11R6/lib</code> on OpenBSD.
+</details>
 <details>
 <summary>FreeBSD</summary>
 <pre><code># If you use doas or su instead of sudo, modify the following commands accordingly.
 sudo pkg update
-sudo pkg install gcc gmake libX11 libXinerama</code></pre>
+sudo pkg install gmake libX11 libXinerama libXcursor</code></pre>
+
+sxwm uses GNU Make. On FreeBSD, use <code>gmake</code> instead of the system BSD <code>make</code>:
+
+<pre><code>gmake
+sudo gmake install</code></pre>
+
+The Makefile automatically uses <code>/usr/local/include</code> and <code>/usr/local/lib</code> on FreeBSD.
 </details>
 
 <details>
@@ -115,7 +122,6 @@ pkg install clang make xcb-util-keysyms xorgproto libxcursor libx11 libxinerama 
 </details>
 
 ---
-
 ## Build & Install
 
 > [!NOTE]
@@ -141,13 +147,33 @@ sudo xbps-install -S sxwm
 
 ### Build from Source
 
+Clone the repository:
+
 ```sh
 git clone --depth=1 https://github.com/uint23/sxwm.git
 cd sxwm/
-make
-sudo/doas make clean install
 ```
 
+On Linux and other systems where GNU Make is installed as `make`:
+
+```sh
+make
+sudo make install
+```
+
+On FreeBSD:
+
+```sh
+gmake
+sudo gmake install
+```
+
+On OpenBSD:
+
+```sh
+gmake
+doas gmake install
+```
 ### Run
 
 Add to your `~/.xinitrc`:
@@ -159,21 +185,29 @@ Or use the `sxwm.desktop` file
 ---
 ## Makefile Targets
 
-| Target                | Description                                              |
-|-----------------------|----------------------------------------------------------|
-| `make` / `make all`   | Build the `sxwm` binary                                  |
-| `make clean`          | Remove build artifacts                                   |
-| `make install`        | Install `sxwm` to `$(PREFIX)/bin` (default `/usr/local`) |
-| `make uninstall`      | Remove installed binary                                  |
-| `make clean install`  | Clean then install                                       |
+The Makefile requires GNU Make. On Linux it is normally invoked as `make`; on FreeBSD and OpenBSD use `gmake`.
+
+| Target | Linux | FreeBSD / OpenBSD | Description |
+|---|---|---|---|
+| build | `make` / `make all` | `gmake` / `gmake all` | Build the `sxwm` binary |
+| clean | `make clean` | `gmake clean` | Remove build artifacts |
+| install | `make install` | `gmake install` | Install `sxwm` to `$(PREFIX)/bin` (default `/usr/local`) |
+| uninstall | `make uninstall` | `gmake uninstall` | Remove installed binary |
+| clean install | `make clean install` | `gmake clean install` | Clean then install |
 
 > Override install directory with `PREFIX`:
+>
+> Linux:
 > ```sh
 > make install PREFIX=$HOME/.local
 > ```
+>
+> FreeBSD / OpenBSD:
+> ```sh
+> gmake install PREFIX=$HOME/.local
+> ```
 
 ---
-
 ## Thanks & Inspiration
 
 - [dwm](https://dwm.suckless.org) - Tiling & source code
